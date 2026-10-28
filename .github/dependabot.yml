@@ -11,3 +11,12 @@ updates:
     groups:
       dev-dependencies:
         dependency-type: development
+    # Majors of these tend to drop older Node versions we still support,
+    # so they get upgraded by hand.
+    ignore:
+      - dependency-name: typescript
+        update-types: [version-update:semver-major]
+      - dependency-name: vitest
+        update-types: [version-update:semver-major]
+      - dependency-name: "@types/node"
+        update-types: [version-update:semver-major]
