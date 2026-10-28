@@ -1,6 +1,6 @@
 {
   "name": "vndau",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Normalize Vietnamese tone marks (hoà/hòa, thuỷ/thủy), fix NFD text, strip diacritics, slugify.",
   "keywords": [
     "vietnamese",
