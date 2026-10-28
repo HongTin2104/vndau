@@ -13,6 +13,12 @@
   ],
   "license": "MIT",
   "author": "HongTin2104",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/HongTin2104/vndau.git"
+  },
+  "homepage": "https://github.com/HongTin2104/vndau#readme",
+  "bugs": "https://github.com/HongTin2104/vndau/issues",
   "type": "module",
   "exports": {
     ".": {
