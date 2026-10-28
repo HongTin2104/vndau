@@ -1,4 +1,4 @@
-const TONE_MARKS_RE = /[̣̀́̃̉]/g;
+const TONE_MARKS_RE = /[\u0300\u0301\u0303\u0309\u0323]/g;
 const ALL_MARKS_RE = /\p{M}/gu;
 
 /**

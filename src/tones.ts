@@ -2,16 +2,16 @@
  * The five Vietnamese tone marks as Unicode combining characters, indexed by
  * tone number. Tone 0 (thanh ngang) has no mark.
  */
-export const TONE_MARKS = ['', '̀', '̉', '̃', '́', '̣'] as const;
+export const TONE_MARKS = ['', '\u0300', '\u0309', '\u0303', '\u0301', '\u0323'] as const;
 
 export type Tone = 0 | 1 | 2 | 3 | 4 | 5;
 
 const TONE_BY_MARK = new Map<string, Tone>([
-  ['̀', 1], // huyền
-  ['̉', 2], // hỏi
-  ['̃', 3], // ngã
-  ['́', 4], // sắc
-  ['̣', 5], // nặng
+  ['\u0300', 1], // huyền
+  ['\u0309', 2], // hỏi
+  ['\u0303', 3], // ngã
+  ['\u0301', 4], // sắc
+  ['\u0323', 5], // nặng
 ]);
 
 export const BASE_VOWELS = 'aăâeêioôơuưy';

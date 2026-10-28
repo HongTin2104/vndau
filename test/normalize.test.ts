@@ -95,8 +95,8 @@ describe('normalize', () => {
   });
 
   it('fixes NFD and tone placement in one go', () => {
-    expect(normalize('hòa')).toBe('hoà');
-    expect(normalize('hòa', { style: 'old' })).toBe('hòa');
+    expect(normalize('ho\u0300a')).toBe('hoà');
+    expect(normalize('ho\u0300a', { style: 'old' })).toBe('hòa');
   });
 
   it('keeps punctuation, spacing and numbers', () => {
