@@ -1,0 +1,35 @@
+name: Wrong result
+description: A word or sentence that comes out wrong
+labels: [bug]
+body:
+  - type: input
+    id: input
+    attributes:
+      label: Input
+      placeholder: hòa
+    validations:
+      required: true
+  - type: input
+    id: actual
+    attributes:
+      label: What you got
+    validations:
+      required: true
+  - type: input
+    id: expected
+    attributes:
+      label: What you expected
+    validations:
+      required: true
+  - type: dropdown
+    id: style
+    attributes:
+      label: Style
+      options: [new, old]
+    validations:
+      required: true
+  - type: textarea
+    id: notes
+    attributes:
+      label: Notes
+      description: Source for the expected form (dictionary, guideline), vndau version, anything else.
