@@ -68,7 +68,7 @@ export function normalizeWord(word: string, style: ToneStyle = 'new'): string {
 }
 
 // Letters plus combining marks, so NFD input stays in one token.
-const WORD_RE = /[\p{L}\p{M}]+/gu;
+export const WORD_RE = /[\p{L}\p{M}]+/gu;
 
 /**
  * Normalize Vietnamese text: convert to NFC and put every tone mark in the
