@@ -20,11 +20,13 @@
   "homepage": "https://github.com/HongTin2104/vndau#readme",
   "bugs": "https://github.com/HongTin2104/vndau/issues",
   "type": "module",
+  "sideEffects": false,
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
-    }
+    },
+    "./package.json": "./package.json"
   },
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
