@@ -1,0 +1,45 @@
+{
+  "name": "vndau",
+  "version": "0.1.0",
+  "description": "Normalize Vietnamese tone marks (hoà/hòa, thuỷ/thủy), fix NFD text, strip diacritics, slugify.",
+  "keywords": [
+    "vietnamese",
+    "tieng-viet",
+    "unicode",
+    "normalize",
+    "diacritics",
+    "slugify",
+    "tone-marks"
+  ],
+  "license": "MIT",
+  "author": "HongTin2104",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "bin": {
+    "vndau": "./dist/cli.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "engines": {
+    "node": ">=18.3"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit",
+    "prepublishOnly": "npm run typecheck && npm test && npm run build"
+  },
+  "devDependencies": {
+    "@types/node": "^22.20.5",
+    "typescript": "^5.9.3",
+    "vitest": "^3.2.7"
+  }
+}
