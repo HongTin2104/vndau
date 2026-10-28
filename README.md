@@ -34,6 +34,10 @@ that differ by an invisible character. `vndau` fixes both.
 npm install vndau
 ```
 
+The package is ESM only. Node 18.11+ for the CLI; the library itself has no Node-specific code
+and runs in any modern browser or bundler. From CommonJS on Node 20.19+ / 22.12+, plain
+`require('vndau')` works; on older versions use `await import('vndau')`.
+
 ## Usage
 
 ```js
