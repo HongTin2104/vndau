@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.1.1 - 2026-10-28
 
 - `engines.node` corrected to `>=18.11` (the CLI relies on `parseArgs` defaults)
 - `sideEffects: false` for better tree-shaking, `vndau/package.json` is now importable
