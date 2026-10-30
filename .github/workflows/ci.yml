@@ -5,10 +5,18 @@ on:
     branches: [main]
   pull_request:
 
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   test:
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         node: [18, 20, 22, 24]
     steps:
@@ -20,6 +28,19 @@ jobs:
       - run: npm ci
       - run: npm run typecheck
       - run: npm test
+        if: matrix.node != 24
+      # Fails below the thresholds in vitest.config.ts.
+      - run: npm run coverage
+        if: matrix.node == 24
+      - name: Coverage summary
+        if: matrix.node == 24
+        run: |
+          node -e '
+          const t = require("./coverage/coverage-summary.json").total;
+          const rows = ["statements", "branches", "functions", "lines"]
+            .map((k) => `| ${k} | ${t[k].covered}/${t[k].total} | ${t[k].pct}% |`);
+          console.log(["### Coverage", "| | covered | % |", "|---|---|---|", ...rows].join("\n"));
+          ' >> "$GITHUB_STEP_SUMMARY"
       - run: npm run build
       - name: Smoke test the CLI
         run: echo "hòa bình" | node dist/cli.js | grep -q "hoà bình"
