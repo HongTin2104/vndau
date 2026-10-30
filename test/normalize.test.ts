@@ -130,6 +130,13 @@ describe('normalize', () => {
       );
     });
 
+    it('stays fast on long text without an @', () => {
+      const text = '!'.repeat(100_000);
+      const start = performance.now();
+      expect(normalize(text)).toBe(text);
+      expect(performance.now() - start).toBeLessThan(100);
+    });
+
     it('still normalizes the words around a URL', () => {
       expect(normalize('hòa tại https://x.vn/hòa')).toBe('hoà tại https://x.vn/hòa');
     });

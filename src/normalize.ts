@@ -73,7 +73,8 @@ export const WORD_RE = /[\p{L}\p{M}]+/gu;
 // Links and e-mail addresses keep their exact spelling: changing a tone mark
 // inside one changes the address it points to.
 const URL_RE = /(?:https?:\/\/|www\.)[^\s<>"'`]+/giu;
-const EMAIL_RE = /[^\s@<>"'`(),;:\[\]]+@[^\s@<>"'`(),;:\[\]]+\.[^\s@<>"'`(),;:\[\]]+/gu;
+const EMAIL_RE =
+  /(?<![^\s@<>"'`(),;:[\]])[^\s@<>"'`(),;:[\]]+@[^\s@<>"'`(),;:[\]]+\.[^\s@<>"'`(),;:[\]]+/gu;
 
 export interface Span {
   start: number;
