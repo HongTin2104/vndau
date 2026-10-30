@@ -28,4 +28,14 @@ describe('findIssues', () => {
     const issues = findIssues('a\r\nthủy');
     expect(issues[0]).toMatchObject({ line: 2, column: 1 });
   });
+
+  it('ignores words inside URLs and e-mail addresses', () => {
+    expect(findIssues('Xem https://x.vn/hòa và hòa.bình@example.com')).toEqual([]);
+  });
+
+  it('still reports the same word outside a URL', () => {
+    expect(findIssues('hòa tại https://x.vn/hòa')).toEqual([
+      { line: 1, column: 1, found: 'hòa', expected: 'hoà', kind: 'tone' },
+    ]);
+  });
 });

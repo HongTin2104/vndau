@@ -112,4 +112,26 @@ describe('normalize', () => {
     const once = normalize(text);
     expect(normalize(once)).toBe(once);
   });
+
+  describe('URLs and e-mail addresses', () => {
+    it('keeps words inside URLs unchanged', () => {
+      expect(normalize('Xem https://x.vn/hòa nhé')).toBe('Xem https://x.vn/hòa nhé');
+      expect(normalize('www.example.com/thủy điện')).toBe('www.example.com/thủy điện');
+    });
+
+    it('keeps NFD text inside a URL decomposed', () => {
+      const url = 'https://x.vn/ho\u0300a';
+      expect(normalize(url)).toBe(url);
+    });
+
+    it('keeps e-mail addresses unchanged', () => {
+      expect(normalize('gửi tới hòa.bình@example.com nhé')).toBe(
+        'gửi tới hòa.bình@example.com nhé',
+      );
+    });
+
+    it('still normalizes the words around a URL', () => {
+      expect(normalize('hòa tại https://x.vn/hòa')).toBe('hoà tại https://x.vn/hòa');
+    });
+  });
 });

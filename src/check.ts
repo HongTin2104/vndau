@@ -1,4 +1,4 @@
-import { WORD_RE, normalizeWord, type ToneStyle } from './normalize.js';
+import { WORD_RE, inSpan, normalizeWord, protectedSpans, type ToneStyle } from './normalize.js';
 
 export interface Issue {
   /** 1-based */
@@ -18,7 +18,9 @@ export function findIssues(text: string, style: ToneStyle = 'new'): Issue[] {
 
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i]!;
+    const spans = protectedSpans(line);
     for (const m of line.matchAll(WORD_RE)) {
+      if (inSpan(spans, m.index)) continue;
       const found = m[0];
       const expected = normalizeWord(found, style);
       if (found === expected) continue;
