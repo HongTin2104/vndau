@@ -8,7 +8,7 @@ export default defineConfig({
       // The CLI runs in a child process in test/cli.test.ts, which v8 coverage cannot see.
       exclude: ['src/cli.ts'],
       reporter: ['text', 'json-summary'],
-      thresholds: { statements: 95, branches: 90, functions: 95, lines: 95 },
+      thresholds: { statements: 100, branches: 95, functions: 100, lines: 100 },
     },
   },
 });
