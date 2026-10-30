@@ -20,7 +20,7 @@ npm test          # tests only
 npm run build     # outputs to dist/
 ```
 
-CI runs Biome, then the tests on Node 18, 20, 22 and 24, smoke-tests the CLI, and runs CodeQL.
+CI runs Biome, then the tests on Node 20, 22 and 24, smoke-tests the CLI, and runs CodeQL.
 Coverage must stay at 100% of lines and functions and 95% of branches; `npm run coverage` lists
 the lines your change left untested.
 
