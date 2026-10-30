@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { normalize, normalizeWord } from '../src/index.js';
+import { protectedSpans } from '../src/normalize.js';
 
 describe('normalizeWord', () => {
   it.each([
@@ -139,6 +140,12 @@ describe('normalize', () => {
 
     it('still normalizes the words around a URL', () => {
       expect(normalize('hòa tại https://x.vn/hòa')).toBe('hoà tại https://x.vn/hòa');
+    });
+
+    it('merges an e-mail address inside a URL into one span', () => {
+      const text = 'hòa https://x.vn/a?to=thủy@x.vn hòa';
+      expect(protectedSpans(text)).toEqual([{ start: 4, end: 31 }]);
+      expect(normalize(text)).toBe('hoà https://x.vn/a?to=thủy@x.vn hoà');
     });
   });
 });

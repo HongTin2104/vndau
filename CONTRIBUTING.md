@@ -12,6 +12,8 @@ If you can point to a source for the expected form (dictionary, MOET guideline),
 
 ## Development
 
+You need Node 20.19+ or 22.12+ (required by Vitest and Vite; the published package itself runs on any Node 20).
+
 ```sh
 npm install
 npm run check     # lint + typecheck + tests with coverage, the same as CI
@@ -20,7 +22,7 @@ npm test          # tests only
 npm run build     # outputs to dist/
 ```
 
-CI runs Biome, then the tests on Node 18, 20, 22 and 24, smoke-tests the CLI, and runs CodeQL.
+CI runs Biome, then the tests on Node 20, 22 and 24, smoke-tests the CLI, and runs CodeQL.
 Coverage must stay at 100% of lines and functions and 95% of branches; `npm run coverage` lists
 the lines your change left untested.
 
