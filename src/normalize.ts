@@ -70,12 +70,59 @@ export function normalizeWord(word: string, style: ToneStyle = 'new'): string {
 // Letters plus combining marks, so NFD input stays in one token.
 export const WORD_RE = /[\p{L}\p{M}]+/gu;
 
+// Links and e-mail addresses keep their exact spelling: changing a tone mark
+// inside one changes the address it points to.
+const URL_RE = /(?:https?:\/\/|www\.)[^\s<>"'`]+/giu;
+const EMAIL_RE =
+  /(?<![^\s@<>"'`(),;:[\]])[^\s@<>"'`(),;:[\]]+@[^\s@<>"'`(),;:[\]]+\.[^\s@<>"'`(),;:[\]]+/gu;
+
+export interface Span {
+  start: number;
+  end: number;
+}
+
+/** Ranges of the text that must not be normalized: URLs and e-mail addresses. */
+export function protectedSpans(text: string): Span[] {
+  const found: Span[] = [];
+  for (const re of [URL_RE, EMAIL_RE]) {
+    for (const m of text.matchAll(re)) found.push({ start: m.index, end: m.index + m[0].length });
+  }
+  found.sort((a, b) => a.start - b.start);
+
+  const spans: Span[] = [];
+  for (const span of found) {
+    const last = spans[spans.length - 1];
+    if (last && span.start <= last.end) last.end = Math.max(last.end, span.end);
+    else spans.push({ start: span.start, end: span.end });
+  }
+  return spans;
+}
+
+/** True when `index` falls inside one of `spans`. */
+export function inSpan(spans: Span[], index: number): boolean {
+  return spans.some((s) => index >= s.start && index < s.end);
+}
+
+function normalizeText(text: string, style: ToneStyle): string {
+  return text.replace(WORD_RE, (w) => normalizeWord(w, style)).normalize('NFC');
+}
+
 /**
  * Normalize Vietnamese text: convert to NFC and put every tone mark in the
  * position required by `style`. Non-Vietnamese words are left untouched
- * apart from NFC composition.
+ * apart from NFC composition; URLs and e-mail addresses are kept verbatim.
  */
 export function normalize(text: string, options: NormalizeOptions = {}): string {
   const style = options.style ?? 'new';
-  return text.replace(WORD_RE, (w) => normalizeWord(w, style)).normalize('NFC');
+  const spans = protectedSpans(text);
+  if (spans.length === 0) return normalizeText(text, style);
+
+  let out = '';
+  let pos = 0;
+  for (const span of spans) {
+    out += normalizeText(text.slice(pos, span.start), style);
+    out += text.slice(span.start, span.end);
+    pos = span.end;
+  }
+  return out + normalizeText(text.slice(pos), style);
 }
