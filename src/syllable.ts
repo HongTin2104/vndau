@@ -1,4 +1,5 @@
 // Onsets ordered longest-first so greedy matching picks "ngh" over "ng".
+// biome-ignore format: grouped by length for readability
 const ONSETS = [
   'ngh', 'ng', 'nh', 'ch', 'gh', 'gi', 'kh', 'ph', 'qu', 'th', 'tr',
   'b', 'c', 'd', 'đ', 'g', 'h', 'k', 'l', 'm', 'n', 'p', 'r', 's', 't', 'v', 'x',
@@ -8,6 +9,7 @@ const CODAS = new Set(['', 'c', 'ch', 'm', 'n', 'ng', 'nh', 'p', 't']);
 
 // Every vowel nucleus that occurs in standard Vietnamese, without tones.
 // Anything outside this list is treated as a non-Vietnamese word.
+// biome-ignore format: grouped by number of vowels
 const NUCLEI = new Set([
   'a', 'ă', 'â', 'e', 'ê', 'i', 'o', 'ô', 'ơ', 'u', 'ư', 'y',
   'ai', 'ao', 'au', 'ay', 'âu', 'ây', 'eo', 'êu', 'ia', 'iê', 'iu',

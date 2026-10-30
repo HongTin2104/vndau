@@ -14,11 +14,7 @@ export function removeTones(text: string): string {
  * "Tiếng Việt" -> "Tieng Viet"
  */
 export function removeDiacritics(text: string): string {
-  return text
-    .normalize('NFD')
-    .replace(ALL_MARKS_RE, '')
-    .replace(/đ/g, 'd')
-    .replace(/Đ/g, 'D');
+  return text.normalize('NFD').replace(ALL_MARKS_RE, '').replace(/đ/g, 'd').replace(/Đ/g, 'D');
 }
 
 export interface SlugifyOptions {

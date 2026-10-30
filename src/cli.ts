@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { readFileSync, readdirSync, statSync, writeFileSync } from 'node:fs';
+import { readFileSync, readdirSync, statSync, writeFileSync, type Stats } from 'node:fs';
 import { extname, join } from 'node:path';
 import { parseArgs } from 'node:util';
 import { findIssues } from './check.js';
@@ -31,7 +31,7 @@ function fail(msg: string): never {
 function collect(paths: string[], exts: Set<string>): string[] {
   const out: string[] = [];
   const walk = (p: string, explicit: boolean) => {
-    let st;
+    let st: Stats;
     try {
       st = statSync(p);
     } catch {
@@ -57,10 +57,9 @@ async function readStdin(): Promise<string> {
   return Buffer.concat(chunks).toString('utf8');
 }
 
-async function main() {
-  let parsed;
+function parseCli() {
   try {
-    parsed = parseArgs({
+    return parseArgs({
       allowPositionals: true,
       options: {
         style: { type: 'string', short: 's', default: 'new' },
@@ -70,12 +69,14 @@ async function main() {
       },
     });
   } catch (err) {
-    fail((err as Error).message);
+    return fail((err as Error).message);
   }
+}
 
-  const { values, positionals } = parsed;
+async function main() {
+  const { values, positionals } = parseCli();
   if (values.help) {
-    process.stdout.write(HELP + '\n');
+    process.stdout.write(`${HELP}\n`);
     return;
   }
 
@@ -86,7 +87,7 @@ async function main() {
 
   if (command === undefined) {
     if (process.stdin.isTTY) {
-      process.stdout.write(HELP + '\n');
+      process.stdout.write(`${HELP}\n`);
       return;
     }
     process.stdout.write(normalize(await readStdin(), { style }));

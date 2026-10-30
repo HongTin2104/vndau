@@ -1,5 +1,5 @@
 import { execFileSync, spawnSync } from 'node:child_process';
-import { mkdtempSync, readFileSync, rmSync, writeFileSync, mkdirSync } from 'node:fs';
+import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterEach, beforeAll, beforeEach, describe, expect, it } from 'vitest';
@@ -12,7 +12,11 @@ function run(args: string[], input?: string) {
 }
 
 beforeAll(() => {
-  execFileSync(process.execPath, [join('node_modules', 'typescript', 'bin', 'tsc'), '-p', 'tsconfig.build.json']);
+  execFileSync(process.execPath, [
+    join('node_modules', 'typescript', 'bin', 'tsc'),
+    '-p',
+    'tsconfig.build.json',
+  ]);
 }, 60_000);
 
 let dir: string;
