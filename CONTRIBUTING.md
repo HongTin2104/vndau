@@ -12,6 +12,8 @@ If you can point to a source for the expected form (dictionary, MOET guideline),
 
 ## Development
 
+You need Node 20.19+ or 22.12+ (required by Vitest and Vite; the published package itself runs on any Node 20).
+
 ```sh
 npm install
 npm run check     # lint + typecheck + tests with coverage, the same as CI
