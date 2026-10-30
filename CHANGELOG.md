@@ -1,9 +1,11 @@
 # Changelog
 
-## Unreleased
+## 0.2.0 - 2026-10-30
 
 - **Breaking:** Node 18 is no longer supported; `engines.node` is now `>=20`. Node 18 reached end
   of life in April 2025. Stay on 0.1.x if you still need it.
+- URLs and e-mail addresses are left untouched: `normalize()` no longer rewrites them, and
+  `findIssues()` / `vndau check` no longer report them (#10)
 
 ## 0.1.1 - 2026-10-28
 
