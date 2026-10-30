@@ -2,6 +2,9 @@
 
 [![CI](https://github.com/HongTin2104/vndau/actions/workflows/ci.yml/badge.svg)](https://github.com/HongTin2104/vndau/actions/workflows/ci.yml)
 [![npm](https://img.shields.io/npm/v/vndau)](https://www.npmjs.com/package/vndau)
+[![npm downloads](https://img.shields.io/npm/dm/vndau)](https://www.npmjs.com/package/vndau)
+[![Node](https://img.shields.io/node/v/vndau)](package.json)
+[![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 
 Normalize Vietnamese tone marks so that `hòa` and `hoà` stop being two different strings.
 
@@ -150,6 +153,30 @@ TypeScript types are included.
 
 Bug reports with a concrete word that comes out wrong are the most useful thing.
 See [CONTRIBUTING.md](CONTRIBUTING.md).
+
+## Tiếng Việt
+
+`vndau` chuẩn hoá cách bỏ dấu tiếng Việt về một kiểu thống nhất, để `hòa` và `hoà` không còn là hai
+chuỗi khác nhau. Thư viện không có dependency, chạy được trên Node 20+ và trình duyệt, kèm CLI.
+
+```sh
+npm install vndau
+```
+
+Dùng khi nào:
+
+- **Tìm kiếm, khử trùng lặp dữ liệu:** chuẩn hoá cả từ khoá lẫn dữ liệu trước khi so sánh (xem mục
+  [Searching](#searching)). Dữ liệu crawl từ nhiều nguồn thường lẫn kiểu dấu cũ, kiểu dấu mới và NFD.
+- **Kiểm tra file dịch (i18n) và tài liệu trong CI:** `npx vndau check locales/` trả về mã lỗi 1 khi
+  có từ bỏ dấu sai vị trí như `qúy`, `tóan`, hoặc ký tự NFD copy từ macOS hay PDF.
+- **Tạo slug URL và tên file:** `slugify('Hà Nội mùa thu')` cho ra `'ha-noi-mua-thu'`.
+
+Mặc định là kiểu dấu mới (`hoà`, `thuỷ`); dùng `{ style: 'old' }` hoặc `--style old` nếu dự án của
+bạn theo kiểu cũ (`hòa`, `thủy`). Hai kiểu chỉ khác nhau ở vần `oa`, `oe`, `uy` (xem
+[Tone placement rules](#tone-placement-rules)). URL và địa chỉ email trong văn bản được giữ nguyên.
+
+Báo lỗi tốt nhất là đưa ra một từ cụ thể bị xử lý sai, kèm nguồn cho cách viết đúng:
+[mở issue tại đây](https://github.com/HongTin2104/vndau/issues/new?template=wrong-result.yml).
 
 ## License
 
