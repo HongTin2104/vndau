@@ -14,10 +14,15 @@ If you can point to a source for the expected form (dictionary, MOET guideline),
 
 ```sh
 npm install
-npm test          # vitest
-npm run typecheck
+npm run check     # lint + typecheck + tests with coverage, the same as CI
+npm run format    # fix formatting and safe lint issues (Biome)
+npm test          # tests only
 npm run build     # outputs to dist/
 ```
+
+CI runs Biome, then the tests on Node 18, 20, 22 and 24, smoke-tests the CLI, and runs CodeQL.
+Coverage must stay at 100% of lines and functions and 95% of branches; `npm run coverage` lists
+the lines your change left untested.
 
 Try the CLI against your local build:
 
