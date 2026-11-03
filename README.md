@@ -81,9 +81,10 @@ vndau check <path...>   report words with misplaced tones or NFD characters
 vndau fix <path...>     rewrite files in place
 vndau < input.txt       normalize stdin to stdout
 
-  -s, --style <new|old>   tone placement style (default: new)
-  -e, --ext <list>        extensions to scan in directories
-  -q, --quiet             only print the summary
+  -s, --style <new|old>              tone placement style (default: new)
+  -e, --ext <list>                   extensions to scan in directories
+  -f, --format <text|json|github>    output format for check (default: text)
+  -q, --quiet                        only print the summary
 ```
 
 ```
@@ -98,6 +99,19 @@ found 3 issue(s) in 1 of 1 file(s)
 
 ```yaml
 - run: npx vndau check docs/ locales/
+```
+
+Use `--format github` to get inline annotations on pull requests:
+
+```yaml
+- run: npx vndau check docs/ locales/ --format github
+```
+
+Use `--format json` to get machine-readable output (one JSON object per line):
+
+```
+$ npx vndau check locales/ --format json
+{"file":"locales/vi.json","line":2,"column":13,"found":"Hòa","expected":"Hoà","kind":"tone"}
 ```
 
 Directories are scanned recursively, skipping `node_modules`, `.git`, `dist`, `build` and
