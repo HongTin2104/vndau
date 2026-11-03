@@ -81,9 +81,24 @@ vndau check <path...>   report words with misplaced tones or NFD characters
 vndau fix <path...>     rewrite files in place
 vndau < input.txt       normalize stdin to stdout
 
-  -s, --style <new|old>   tone placement style (default: new)
-  -e, --ext <list>        extensions to scan in directories
-  -q, --quiet             only print the summary
+  -s, --style <new|old>              tone placement style (default: new)
+  -e, --ext <list>                   extensions to scan in directories
+  -x, --exclude <pattern>            skip files matching pattern (repeatable)
+  -q, --quiet                        only print the summary
+```
+
+Patterns for `--exclude` use `*` (matches within a path segment) or `**` (matches across segments), or plain substring:
+
+```
+$ npx vndau check docs/ --exclude '*/fixtures/*' --exclude generated.md
+```
+
+You can also list patterns in a `.vndauignore` file in the current directory (one pattern per line, `#` for comments):
+
+```
+# .vndauignore
+*/fixtures/*
+generated.md
 ```
 
 ```

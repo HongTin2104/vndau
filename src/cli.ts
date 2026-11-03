@@ -1,5 +1,12 @@
 #!/usr/bin/env node
-import { readFileSync, readdirSync, statSync, writeFileSync, type Stats } from 'node:fs';
+import {
+  existsSync,
+  readFileSync,
+  readdirSync,
+  statSync,
+  writeFileSync,
+  type Stats,
+} from 'node:fs';
 import { extname, join } from 'node:path';
 import { parseArgs } from 'node:util';
 import { findIssues } from './check.js';
@@ -16,6 +23,8 @@ Options:
   -s, --style <new|old>   tone placement style (default: new)
   -e, --ext <list>        extensions to scan in directories
                           (default: ${DEFAULT_EXT})
+  -x, --exclude <pattern> skip files matching pattern (repeatable);
+                          also reads .vndauignore in the current directory
   -q, --quiet             only print the summary
   -h, --help              show this message
 
@@ -28,7 +37,39 @@ function fail(msg: string): never {
   process.exit(2);
 }
 
-function collect(paths: string[], exts: Set<string>): string[] {
+/**
+ * Convert a glob-like pattern into a RegExp.
+ * `**` matches anything (including `/`), `*` matches anything except `/`.
+ * Otherwise the pattern is treated as a substring.
+ */
+function patternToRegex(pattern: string): RegExp {
+  if (!pattern.includes('*')) {
+    // Plain substring — match if the path contains this text
+    return new RegExp(pattern.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
+  }
+  // Split on ** first, escape the rest, then join with .* for ** and [^/]* for *
+  const re = pattern
+    .split('**')
+    .map((seg) => seg.replace(/[.+?^${}()|[\]\\]/g, '\\$&').replace(/\*/g, '[^/]*'))
+    .join('.*');
+  return new RegExp(re);
+}
+
+function isExcluded(filePath: string, patterns: RegExp[]): boolean {
+  const normalized = filePath.replace(/\\/g, '/');
+  return patterns.some((re) => re.test(normalized));
+}
+
+function loadIgnoreFile(): string[] {
+  const p = join(process.cwd(), '.vndauignore');
+  if (!existsSync(p)) return [];
+  return readFileSync(p, 'utf8')
+    .split(/\r?\n/)
+    .map((l) => l.trim())
+    .filter((l) => l.length > 0 && !l.startsWith('#'));
+}
+
+function collect(paths: string[], exts: Set<string>, excludePatterns: RegExp[]): string[] {
   const out: string[] = [];
   const walk = (p: string, explicit: boolean) => {
     let st: Stats;
@@ -43,8 +84,10 @@ function collect(paths: string[], exts: Set<string>): string[] {
         walk(join(p, name), false);
       }
     } else if (explicit || exts.has(extname(p).slice(1).toLowerCase())) {
-      // Files passed by name are always checked, whatever the extension.
-      out.push(p);
+      if (!isExcluded(p, excludePatterns)) {
+        // Files passed by name are always checked, whatever the extension.
+        out.push(p);
+      }
     }
   };
   for (const p of paths) walk(p, true);
@@ -64,6 +107,7 @@ function parseCli() {
       options: {
         style: { type: 'string', short: 's', default: 'new' },
         ext: { type: 'string', short: 'e', default: DEFAULT_EXT },
+        exclude: { type: 'string', short: 'x', multiple: true },
         quiet: { type: 'boolean', short: 'q', default: false },
         help: { type: 'boolean', short: 'h', default: false },
       },
@@ -98,7 +142,10 @@ async function main() {
   if (paths.length === 0) fail(`${command} needs at least one path`);
 
   const exts = new Set(values.ext.split(',').map((e) => e.trim().replace(/^\./, '').toLowerCase()));
-  const files = collect(paths, exts);
+  const rawPatterns = [...(values.exclude ?? []), ...loadIgnoreFile()];
+  const excludePatterns = rawPatterns.map(patternToRegex);
+
+  const files = collect(paths, exts, excludePatterns);
   let total = 0;
   let touched = 0;
 
