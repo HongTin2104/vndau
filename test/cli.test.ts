@@ -6,8 +6,8 @@ import { afterEach, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 
 const CLI = join(__dirname, '..', 'dist', 'cli.js');
 
-function run(args: string[], input?: string) {
-  const r = spawnSync(process.execPath, [CLI, ...args], { input, encoding: 'utf8' });
+function run(args: string[], input?: string, cwd?: string) {
+  const r = spawnSync(process.execPath, [CLI, ...args], { input, encoding: 'utf8', cwd });
   return { code: r.status, out: r.stdout, err: r.stderr };
 }
 
@@ -122,5 +122,59 @@ describe('cli', () => {
     const r = run(['check', '--format', 'text', file]);
     expect(r.code).toBe(1);
     expect(r.out).toContain(`${file}:1:1  hòa -> hoà`);
+  });
+
+  it('--exclude skips files matching a substring pattern', () => {
+    writeFileSync(join(dir, 'a.md'), 'hòa\n');
+    writeFileSync(join(dir, 'b.md'), 'hòa\n');
+    const r = run(['check', '--exclude', 'a.md', dir]);
+    expect(r.out).not.toContain('a.md');
+    expect(r.out).toContain('b.md');
+  });
+
+  it('--exclude supports glob with *', () => {
+    mkdirSync(join(dir, 'fixtures'));
+    writeFileSync(join(dir, 'fixtures', 'snap.md'), 'hòa\n');
+    writeFileSync(join(dir, 'docs.md'), 'hòa\n');
+    const r = run(['check', '--exclude', '*/fixtures/*', dir]);
+    expect(r.out).not.toContain('fixtures');
+    expect(r.out).toContain('docs.md');
+  });
+
+  it('-x can be repeated', () => {
+    writeFileSync(join(dir, 'a.md'), 'hòa\n');
+    writeFileSync(join(dir, 'b.md'), 'hòa\n');
+    writeFileSync(join(dir, 'c.md'), 'hòa\n');
+    const r = run(['check', '-x', 'a.md', '-x', 'b.md', dir]);
+    expect(r.out).not.toContain('a.md');
+    expect(r.out).not.toContain('b.md');
+    expect(r.out).toContain('c.md');
+  });
+
+  it('--exclude applies to fix as well', () => {
+    const file = join(dir, 'skip.md');
+    writeFileSync(file, 'hòa\n');
+    run(['fix', '--exclude', 'skip.md', dir]);
+    expect(readFileSync(file, 'utf8')).toBe('hòa\n'); // unchanged
+  });
+
+  it('.vndauignore is read from cwd', () => {
+    writeFileSync(join(dir, 'a.md'), 'hòa\n');
+    writeFileSync(join(dir, 'b.md'), 'hòa\n');
+    writeFileSync(join(dir, '.vndauignore'), '# comment\na.md\n');
+    const r = run(['check', dir], undefined, dir);
+    expect(r.out).not.toContain('a.md');
+    expect(r.out).toContain('b.md');
+  });
+
+  it('.vndauignore patterns combine with --exclude', () => {
+    writeFileSync(join(dir, 'a.md'), 'hòa\n');
+    writeFileSync(join(dir, 'b.md'), 'hòa\n');
+    writeFileSync(join(dir, 'c.md'), 'hòa\n');
+    writeFileSync(join(dir, '.vndauignore'), 'a.md\n');
+    const r = run(['check', '--exclude', 'b.md', dir], undefined, dir);
+    expect(r.out).not.toContain('a.md');
+    expect(r.out).not.toContain('b.md');
+    expect(r.out).toContain('c.md');
   });
 });

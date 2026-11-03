@@ -84,7 +84,22 @@ vndau < input.txt       normalize stdin to stdout
   -s, --style <new|old>              tone placement style (default: new)
   -e, --ext <list>                   extensions to scan in directories
   -f, --format <text|json|github>    output format for check (default: text)
+  -x, --exclude <pattern>            skip files matching pattern (repeatable)
   -q, --quiet                        only print the summary
+```
+
+Patterns for `--exclude` use `*` (matches within a path segment) or `**` (matches across segments), or plain substring:
+
+```
+$ npx vndau check docs/ --exclude '*/fixtures/*' --exclude generated.md
+```
+
+You can also list patterns in a `.vndauignore` file in the current directory (one pattern per line, `#` for comments):
+
+```
+# .vndauignore
+*/fixtures/*
+generated.md
 ```
 
 ```
