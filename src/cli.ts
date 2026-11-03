@@ -13,11 +13,12 @@ const HELP = `Usage:
   vndau < input.txt       normalize stdin to stdout
 
 Options:
-  -s, --style <new|old>   tone placement style (default: new)
-  -e, --ext <list>        extensions to scan in directories
-                          (default: ${DEFAULT_EXT})
-  -q, --quiet             only print the summary
-  -h, --help              show this message
+  -s, --style <new|old>              tone placement style (default: new)
+  -e, --ext <list>                   extensions to scan in directories
+                                     (default: ${DEFAULT_EXT})
+  -f, --format <text|json|github>    output format for check (default: text)
+  -q, --quiet                        only print the summary
+  -h, --help                         show this message
 
 Exit codes: 0 = clean, 1 = issues found (check), 2 = bad usage`;
 
@@ -64,6 +65,7 @@ function parseCli() {
       options: {
         style: { type: 'string', short: 's', default: 'new' },
         ext: { type: 'string', short: 'e', default: DEFAULT_EXT },
+        format: { type: 'string', short: 'f', default: 'text' },
         quiet: { type: 'boolean', short: 'q', default: false },
         help: { type: 'boolean', short: 'h', default: false },
       },
@@ -82,6 +84,10 @@ async function main() {
 
   const style = values.style as ToneStyle;
   if (style !== 'new' && style !== 'old') fail(`unknown style "${values.style}", use new or old`);
+
+  const format = values.format as string;
+  if (format !== 'text' && format !== 'json' && format !== 'github')
+    fail(`unknown format "${format}", use text, json, or github`);
 
   const [command, ...paths] = positionals;
 
@@ -115,8 +121,20 @@ async function main() {
       if (!values.quiet) process.stdout.write(`fixed ${file} (${issues.length})\n`);
     } else if (!values.quiet) {
       for (const i of issues) {
-        const note = i.kind === 'nfd' ? ' (NFD)' : '';
-        process.stdout.write(`${file}:${i.line}:${i.column}  ${i.found} -> ${i.expected}${note}\n`);
+        if (format === 'json') {
+          process.stdout.write(
+            `${JSON.stringify({ file, line: i.line, column: i.column, found: i.found, expected: i.expected, kind: i.kind })}\n`,
+          );
+        } else if (format === 'github') {
+          process.stdout.write(
+            `::warning file=${file},line=${i.line},col=${i.column}::${i.found} -> ${i.expected}\n`,
+          );
+        } else {
+          const note = i.kind === 'nfd' ? ' (NFD)' : '';
+          process.stdout.write(
+            `${file}:${i.line}:${i.column}  ${i.found} -> ${i.expected}${note}\n`,
+          );
+        }
       }
     }
   }

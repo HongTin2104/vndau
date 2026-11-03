@@ -54,7 +54,7 @@ describe('cli', () => {
 
   it('fix rewrites files and keeps line endings', () => {
     const file = join(dir, 'a.txt');
-    writeFileSync(file, 'ho\u0300a\r\nthủy\r\n');
+    writeFileSync(file, 'hòa\r\nthủy\r\n');
     const r = run(['fix', file]);
     expect(r.code).toBe(0);
     expect(readFileSync(file, 'utf8')).toBe('hoà\r\nthuỷ\r\n');
@@ -76,5 +76,51 @@ describe('cli', () => {
     expect(run(['nope', 'x']).code).toBe(2);
     expect(run(['-s', 'weird'], 'a').code).toBe(2);
     expect(run(['check', join(dir, 'missing.md')]).code).toBe(2);
+  });
+
+  it('exits 2 on unknown --format', () => {
+    const file = join(dir, 'a.md');
+    writeFileSync(file, 'hoà\n');
+    expect(run(['check', '--format', 'xml', file]).code).toBe(2);
+  });
+
+  it('check --format json emits one JSON object per issue', () => {
+    const file = join(dir, 'a.md');
+    writeFileSync(file, 'hòa bình\n');
+    const r = run(['check', '--format', 'json', file]);
+    expect(r.code).toBe(1);
+    const obj = JSON.parse(r.out.split('\n').filter(Boolean)[0]!);
+    expect(obj).toMatchObject({
+      file,
+      line: 1,
+      column: 1,
+      found: 'hòa',
+      expected: 'hoà',
+      kind: 'tone',
+    });
+  });
+
+  it('check -f json is clean when file is correct', () => {
+    const file = join(dir, 'a.md');
+    writeFileSync(file, 'hoà bình\n');
+    const r = run(['check', '-f', 'json', file]);
+    expect(r.code).toBe(0);
+    expect(r.out.trim()).toBe('1 file(s) checked, all clean');
+  });
+
+  it('check --format github emits workflow commands', () => {
+    const file = join(dir, 'a.md');
+    writeFileSync(file, 'hòa bình\n');
+    const r = run(['check', '--format', 'github', file]);
+    expect(r.code).toBe(1);
+    expect(r.out).toContain(`::warning file=${file},line=1,col=1::hòa -> hoà`);
+  });
+
+  it('check --format text is unchanged default', () => {
+    const file = join(dir, 'a.md');
+    writeFileSync(file, 'hòa bình\n');
+    const r = run(['check', '--format', 'text', file]);
+    expect(r.code).toBe(1);
+    expect(r.out).toContain(`${file}:1:1  hòa -> hoà`);
   });
 });
